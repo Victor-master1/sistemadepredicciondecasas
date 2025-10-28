@@ -37,8 +37,9 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
       // CORRECCIÓN CLAVE: Usamos el alias faceMeshModule.FaceMesh para evitar el TypeError
       const faceMesh = new faceMeshModule.FaceMesh({ 
         locateFile: (file) => {
-          // Usando unpkg.com es más estable para Vercel/Vite para encontrar los assets
-          return `https://unpkg.com/@mediapipe/face_mesh/${file}`;
+          // Solución FINAL para la carga de assets: usar la ruta oficial de JS Deliver
+          // con la versión explícita.
+          return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh@0.4.1633559619/${file}`;
         },
       });
 
