@@ -1,7 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 import Webcam from 'react-webcam';
 import axios from 'axios';
-import { FaceMesh, FACEMESH_TESSELATION } from '@mediapipe/face_mesh';
+// CORRECCIÓN: Importamos la clase FaceMesh a través de un alias de módulo
+import * as faceMeshModule from '@mediapipe/face_mesh'; 
+import { FACEMESH_TESSELATION } from '@mediapipe/face_mesh';
 import { Camera } from '@mediapipe/camera_utils';
 
 // Define la URL base de la API desde las variables de entorno de Vercel
@@ -32,11 +34,10 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
     const initializeFaceMesh = async () => {
       if (!webcamRef.current?.video) return;
 
-      // CORRECCIÓN CLAVE: Usar la ruta absoluta del CDN para la versión específica o la más estable.
-      // Esto resuelve el error "FaceMesh is not a constructor".
-      const faceMesh = new FaceMesh({
+      // CORRECCIÓN CLAVE: Usamos el alias faceMeshModule.FaceMesh para evitar el TypeError
+      const faceMesh = new faceMeshModule.FaceMesh({ 
         locateFile: (file) => {
-          // Usando unpkg.com es más estable para Vercel/Vite
+          // Usando unpkg.com es más estable para Vercel/Vite para encontrar los assets
           return `https://unpkg.com/@mediapipe/face_mesh/${file}`;
         },
       });
@@ -66,7 +67,8 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
       }
     };
 
-    const timeoutId = setTimeout(initializeFaceMesh, 1000);
+    // Usamos setTimeout para dar tiempo al navegador para inicializar
+    const timeoutId = setTimeout(initializeFaceMesh, 1000); 
 
     return () => {
       clearTimeout(timeoutId);
@@ -134,7 +136,7 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
     setStatus('Analizando rostro...');
 
     try {
-      // CORRECCIÓN CLAVE: Usa la variable de entorno para la URL del backend
+      // Uso de la variable de entorno para la URL del backend
       const response = await axios.post(`${API_BASE_URL}/api/facial_auth`, {
         mode: mode,
         full_name: fullName,
@@ -155,7 +157,6 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
       }
     } catch (error: any) {
       console.error('Error en autenticación facial:', error);
-      // Mejor manejo de errores para mensajes del backend
       const errorMessage = error.response?.data?.message || 'Error al conectar con el servidor o fallo de red.';
       setStatus(`Error: ${errorMessage}`);
     } finally {
