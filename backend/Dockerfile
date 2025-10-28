@@ -2,8 +2,8 @@
 FROM python:3.10-slim
 
 # Paso 1: Instalar dependencias del sistema operativo.
-# Añadimos las librerías gráficas (libGL.so.1, etc.) necesarias para que OpenCV/cv2 funcione 
-# dentro del contenedor sin errores 'ImportError: libGL.so.1'.
+# Añadimos las librerías gráficas (libGL.so.1, etc.) y las librerías de GLib (libgthread-2.0.so.0, etc.)
+# CRUCIAL para que OpenCV/cv2 funcione dentro del contenedor.
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
@@ -11,6 +11,7 @@ RUN apt-get update && apt-get install -y \
     libgl1 \
     libsm6 \
     libxext6 \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo dentro del contenedor
