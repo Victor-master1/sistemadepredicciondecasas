@@ -1,23 +1,32 @@
-# Usamos una imagen de Python 3.10, compatible con MediaPipe.
+# Usamos una imagen de Python 3.10, compatible con librerías de Machine Learning (MediaPipe/OpenCV).
 FROM python:3.10-slim
 
-# Instalar dependencias del sistema necesarias para algunas librerías Python
+# Paso 1: Instalar dependencias del sistema operativo.
+# Añadimos las librerías gráficas (libGL.so.1, etc.) necesarias para que OpenCV/cv2 funcione 
+# dentro del contenedor sin errores 'ImportError: libGL.so.1'.
 RUN apt-get update && apt-get install -y \
     build-essential \
     libpq-dev \
     gcc \
+    libgl1-mesa-glx \
+    libsm6 \
+    libxext6 \
     && rm -rf /var/lib/apt/lists/*
 
 # Establecer el directorio de trabajo dentro del contenedor
 WORKDIR /app
 
-# COPIA CORREGIDA 1: Copia requirements.txt (asumiendo que está en el contexto raíz /backend)
+# Paso 2: Copiar e instalar dependencias de Python.
+# Utilizamos la copia de requirements.txt para optimizar el cacheo.
+# Se asume que requirements.txt está en la raíz del contexto de compilación (/backend).
 COPY requirements.txt . 
 RUN pip install --no-cache-dir -r requirements.txt
 
-# COPIA CORREGIDA 2: Copia el resto del código del backend (asumiendo que todo está en /backend)
+# Paso 3: Copiar el resto del código del backend (incluyendo run.py, app/, facial/, etc.).
 COPY . .
 
-# Comando de despliegue con Gunicorn (servidor de producción)
-# CORRECCIÓN: Se cambia a la sintaxis SHELL (CMD comando) para que $PORT se expanda.
+# Paso 4: Comando de despliegue.
+# Inicia Gunicorn, el servidor de producción.
+# El comando usa la sintaxis shell para que la variable $PORT de Render se expanda correctamente.
+# La aplicación Flask debe estar expuesta como la variable 'app' en el módulo 'run' (run.py:app).
 CMD gunicorn --bind 0.0.0.0:$PORT run:app
