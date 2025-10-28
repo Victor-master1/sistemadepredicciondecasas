@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, ScatterChart, Scatter, ZAxis } from 'recharts'
+import { PieChart, Pie, Cell, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer} from 'recharts'
 
 interface SegmentoMercado {
   segmento: string
@@ -480,7 +480,7 @@ export default function AnalisisMercado() {
                       outerRadius={100}
                       label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
                     >
-                      {Object.entries(COLORES_POTENCIAL).map(([key, color], index) => (
+                      {Object.entries(COLORES_POTENCIAL).map(([color], index) => (
                         <Cell key={`cell-${index}`} fill={color} />
                       ))}
                     </Pie>
