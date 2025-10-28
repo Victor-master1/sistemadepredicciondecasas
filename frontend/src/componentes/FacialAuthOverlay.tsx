@@ -4,6 +4,9 @@ import axios from 'axios';
 import { FaceMesh, FACEMESH_TESSELATION } from '@mediapipe/face_mesh';
 import { Camera } from '@mediapipe/camera_utils';
 
+// Define la URL base de la API desde las variables de entorno de Vercel
+const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+
 interface FacialAuthOverlayProps {
   mode: 'register' | 'login';
   fullName: string;
@@ -29,9 +32,12 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
     const initializeFaceMesh = async () => {
       if (!webcamRef.current?.video) return;
 
+      // CORRECCIÓN CLAVE: Usar la ruta absoluta del CDN para la versión específica o la más estable.
+      // Esto resuelve el error "FaceMesh is not a constructor".
       const faceMesh = new FaceMesh({
         locateFile: (file) => {
-          return `https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/${file}`;
+          // Usando unpkg.com es más estable para Vercel/Vite
+          return `https://unpkg.com/@mediapipe/face_mesh/${file}`;
         },
       });
 
@@ -128,7 +134,8 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
     setStatus('Analizando rostro...');
 
     try {
-      const response = await axios.post('http://localhost:5000/api/facial_auth', {
+      // CORRECCIÓN CLAVE: Usa la variable de entorno para la URL del backend
+      const response = await axios.post(`${API_BASE_URL}/api/facial_auth`, {
         mode: mode,
         full_name: fullName,
         image_base64: imageSrc,
@@ -148,7 +155,8 @@ export const FacialAuthOverlay: React.FC<FacialAuthOverlayProps> = ({
       }
     } catch (error: any) {
       console.error('Error en autenticación facial:', error);
-      const errorMessage = error.response?.data?.message || 'Error al conectar con el servidor.';
+      // Mejor manejo de errores para mensajes del backend
+      const errorMessage = error.response?.data?.message || 'Error al conectar con el servidor o fallo de red.';
       setStatus(`Error: ${errorMessage}`);
     } finally {
       setLoading(false);
