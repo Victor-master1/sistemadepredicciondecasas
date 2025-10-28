@@ -234,7 +234,7 @@ export default function Prediccion() {
       return
     }
 
-    const camposVacios = Object.entries(formData).filter(([key, value]) => value === '')
+    const camposVacios = Object.entries(formData).filter(([_key, value]) => value === '')
     if (camposVacios.length > 0) {
       setError('Todos los campos son obligatorios')
       return
