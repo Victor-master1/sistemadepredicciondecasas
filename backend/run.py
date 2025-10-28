@@ -36,6 +36,6 @@ if __name__ == "__main__":
     print(f"🚀 Servidor web de Flask iniciado en el puerto {port}...")
     # Asegúrate de usar host='0.0.0.0' para escuchar peticiones externas al contenedor
     app.run(host='0.0.0.0', port=port, debug=True)
-```
+
 
 
