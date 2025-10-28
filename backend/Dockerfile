@@ -19,5 +19,5 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY . .
 
 # Comando de despliegue con Gunicorn (servidor de producción)
-# Render inyecta $PORT automáticamente.
-CMD ["gunicorn", "--bind", "0.0.0.0:$PORT", "run:app"]
+# CORRECCIÓN: Se cambia a la sintaxis SHELL (CMD comando) para que $PORT se expanda.
+CMD gunicorn --bind 0.0.0.0:$PORT run:app
